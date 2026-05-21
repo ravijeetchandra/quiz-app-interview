@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizPrep — Ace Your Interviews</title>
+    <link rel="stylesheet" href="css/style.css?v=4">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">QuizPrep</a>
+            <div class="nav-links">
+                <a href="pages/quiz.html" class="nav-link">Take Quiz</a>
+                <a href="pages/dashboard.html" class="nav-link" id="navDashboard" style="display:none">Dashboard</a>
+                <a href="pages/donate.html" class="nav-link">Donate</a>
+                <a href="pages/login.html" class="nav-link" id="navLogin">Login</a>
+                <a href="pages/register.html" class="nav-link btn btn-primary" id="navRegister">Sign Up</a>
+                <button class="nav-link" id="navLogout" style="display:none" onclick="handleLogout()">Logout</button>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-bg">
+                <div class="hero-blob hero-blob-1"></div>
+                <div class="hero-blob hero-blob-2"></div>
+                <div class="hero-blob hero-blob-3"></div>
+            </div>
+            <div class="hero-content">
+                <div class="hero-badge">AI-Powered Interview Prep</div>
+                <h1>Ace Your Next<br><span class="gradient-text">Interview</span></h1>
+                <div class="welcome-message" id="welcomeMsg" style="display:none">
+                    <p class="welcome-text">Welcome back, <strong id="welcomeName"></strong>!</p>
+                </div>
+                <p class="hero-subtitle">Upload your study materials, generate smart quiz questions, and track your progress. Practice smarter, not harder.</p>
+                <div class="hero-actions">
+                    <a href="pages/quiz.html" class="btn btn-primary btn-lg">Start Practice Quiz</a>
+                    <a href="pages/register.html" class="btn btn-outline btn-lg" id="signupBtn">Create Free Account</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+                        <span class="stat-number" id="totalQuizzes">0</span>
+                        <span class="stat-label">Quizzes Taken</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <span class="stat-number" id="avgScore">0%</span>
+                        <span class="stat-label">Avg Score</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📂</div>
+                        <span class="stat-number">10+</span>
+                        <span class="stat-label">Domains</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Three simple steps to ace your interview prep</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card reveal">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">📄</div>
+                    <h3>Upload Materials</h3>
+                    <p>Drop your PDF, DOCX, or TXT files. Notes, textbooks, cheat sheets — anything goes.</p>
+                </div>
+                <div class="step-connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-arrow">→</div>
+                </div>
+                <div class="step-card reveal">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">🤖</div>
+                    <h3>AI Generates Quiz</h3>
+                    <p>Our AI creates relevant MCQs and long-form questions from your content in seconds.</p>
+                </div>
+                <div class="step-connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-arrow">→</div>
+                </div>
+                <div class="step-card reveal">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">📊</div>
+                    <h3>Practice & Track</h3>
+                    <p>Timed quizzes with instant feedback, section breakdowns, and progress over time.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="features reveal">
+            <div class="section-header">
+                <h2>Why QuizPrep?</h2>
+                <p>Built for serious interview preparation</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon-wrap">
+                        <span class="feature-icon-inner">⚡</span>
+                    </div>
+                    <h3>Timed Practice</h3>
+                    <p>30 seconds per MCQ, 2 minutes per long answer — replicates real interview pressure.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon-wrap">
+                        <span class="feature-icon-inner">🎯</span>
+                    </div>
+                    <h3>Adaptive Difficulty</h3>
+                    <p>Choose domain, question count, and passing score. You control the challenge.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon-wrap">
+                        <span class="feature-icon-inner">📈</span>
+                    </div>
+                    <h3>Track Progress</h3>
+                    <p>Dashboard with score trends, domain performance, and detailed history.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon-wrap">
+                        <span class="feature-icon-inner">💡</span>
+                    </div>
+                    <h3>AI Feedback</h3>
+                    <p>Get scored on long answers with strengths, weaknesses, and model answers.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon-wrap">
+                        <span class="feature-icon-inner">🔄</span>
+                    </div>
+                    <h3>Retry Any Quiz</h3>
+                    <p>Generate fresh questions from the same material without re-uploading.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon-wrap">
+                        <span class="feature-icon-inner">🔓</span>
+                    </div>
+                    <h3>Free Forever</h3>
+                    <p>No credit card needed. Start practicing immediately with or without an account.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section reveal">
+            <div class="cta-bg">
+                <div class="cta-blob cta-blob-1"></div>
+                <div class="cta-blob cta-blob-2"></div>
+            </div>
+            <div class="cta-content">
+                <h2>Ready to Ace Your Interview?</h2>
+                <p>Join thousands of candidates who prepare smarter with QuizPrep.</p>
+                <div class="cta-actions">
+                    <a href="pages/quiz.html" class="btn btn-primary btn-lg">Start Now — It's Free</a>
+                    <a href="pages/donate.html" class="btn btn-outline btn-lg">Support Us</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>QuizPrep</h3>
+                <p>AI-powered interview preparation for everyone.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <a href="pages/quiz.html">Take Quiz</a>
+                    <a href="pages/dashboard.html">Dashboard</a>
+                    <a href="pages/donate.html">Donate</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Account</h4>
+                    <a href="pages/login.html">Login</a>
+                    <a href="pages/register.html">Sign Up</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 QuizPrep — Built for interview preparation</p>
+        </div>
+    </footer>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="js/api.js?v=4"></script>
+    <script src="js/toast.js?v=4"></script>
+    <script src="js/auth.js?v=4"></script>
+    <script src="js/app.js?v=4"></script>
+</body>
+</html>

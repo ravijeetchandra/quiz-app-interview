@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support QuizPrep - Donate</title>
+    <link rel="stylesheet" href="../css/style.css?v=4">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">QuizPrep</a>
+            <div class="nav-links">
+                <a href="quiz.html" class="nav-link">Take Quiz</a>
+                <a href="dashboard.html" class="nav-link" id="navDashboard" style="display:none">Dashboard</a>
+                <a href="donate.html" class="nav-link" id="navDonate">☕ Donate</a>
+                <a href="login.html" class="nav-link" id="navLogin">Login</a>
+                <a href="register.html" class="nav-link btn btn-primary" id="navRegister">Sign Up</a>
+                <button class="nav-link" id="navLogout" style="display:none" onclick="handleLogout()">Logout</button>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </nav>
+
+    <main class="donate-page">
+        <div class="donate-card">
+            <div class="donate-header">
+                <span class="coffee-icon">🍵</span>
+                <h1>Buy Me a Chai</h1>
+                <p class="donate-subtitle">
+                    If QuizPrep helped you prepare for your interviews, consider supporting the project with a cup of chai.
+                    Your contribution keeps this free for everyone.
+                </p>
+            </div>
+
+            <div class="donate-amounts">
+                <p class="donate-label">Choose an amount (₹)</p>
+                <div class="amount-grid" id="amountGrid">
+                    <button class="amount-btn" data-amount="5" onclick="selectAmount(5)">₹5</button>
+                    <button class="amount-btn" data-amount="10" onclick="selectAmount(10)">₹10</button>
+                    <button class="amount-btn" data-amount="20" onclick="selectAmount(20)">₹20</button>
+                    <button class="amount-btn" data-amount="50" onclick="selectAmount(50)">₹50</button>
+                    <button class="amount-btn selected" data-amount="100" onclick="selectAmount(100)">₹100</button>
+                </div>
+            </div>
+
+            <div class="donate-pay-section">
+<button class="btn btn-primary btn-lg btn-block" onclick="payWithUPI()" id="payBtn">
+                        🍵 Support with UPI
+                    </button>
+                <p class="donate-upi-id">UPI ID: ravijeet-chandra@axisb</p>
+            </div>
+
+            <div class="donate-qr-section">
+                <img id="qrCode" src="" alt="UPI QR Code" class="qr-image" />
+                <p class="qr-hint">Scan with any UPI app</p>
+            </div>
+
+            <div class="donate-footer-note">
+                <p>💚 Built with love for interview preparation. Thank you for your support!</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>QuizPrep — Made with ❤️ for interview preparation</p>
+    </footer>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="../js/api.js"></script>
+    <script src="../js/toast.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        let selectedAmount = 100;
+        const UPI_ID = 'ravijeet-chandra@axisb';
+        const PAYEE_NAME = 'Ravijeet Chandra';
+
+        function selectAmount(amount) {
+            selectedAmount = amount;
+            document.querySelectorAll('.amount-btn').forEach(b => {
+                b.classList.toggle('selected', parseInt(b.dataset.amount) === amount);
+            });
+            updateQRCode();
+        }
+
+        function buildUPIUrl(amount) {
+            const note = encodeURIComponent('Support QuizPrep');
+            return `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR&tn=${note}`;
+        }
+
+        function payWithUPI() {
+            const url = buildUPIUrl(selectedAmount);
+            window.location.href = url;
+        }
+
+        function updateQRCode() {
+            const upiString = buildUPIUrl(selectedAmount);
+            const qr = document.getElementById('qrCode');
+            qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+            qr.alt = `UPI QR for ₹${selectedAmount}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateQRCode();
+        });
+    </script>
+</body>
+</html>

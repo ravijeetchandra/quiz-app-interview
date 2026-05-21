@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - QuizPrep</title>
+    <link rel="stylesheet" href="../css/style.css?v=4">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">QuizPrep</a>
+            <div class="nav-links">
+                <a href="quiz.html" class="nav-link">Take Quiz</a>
+                <a href="donate.html" class="nav-link">☕ Donate</a>
+                <a href="login.html" class="nav-link">Login</a>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </nav>
+
+    <main class="auth-page">
+        <div class="auth-card">
+            <h1>Create Account</h1>
+            <p class="auth-subtitle">Start tracking your quiz history and progress</p>
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="displayName">Display Name</label>
+                    <input type="text" id="displayName" name="displayName" placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Min 8 characters, 1 uppercase, 1 number" required minlength="8">
+                    <small class="form-hint">At least 8 characters with 1 uppercase letter and 1 number</small>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repeat your password" required>
+                </div>
+                <div class="form-error" id="registerError"></div>
+                <button type="submit" class="btn btn-primary btn-block" id="registerBtn">
+                    <span class="btn-text">Create Account</span>
+                    <span class="btn-loader" style="display:none">⏳</span>
+                </button>
+            </form>
+            <p class="auth-footer">Already have an account? <a href="login.html">Log in</a></p>
+        </div>
+    </main>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="../js/api.js"></script>
+    <script src="../js/toast.js"></script>
+    <script src="../js/auth.js"></script>
+</body>
+</html>

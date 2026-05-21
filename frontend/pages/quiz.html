@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - QuizPrep</title>
+    <link rel="stylesheet" href="../css/style.css?v=4">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">QuizPrep</a>
+            <div class="nav-links">
+                <a href="dashboard.html" class="nav-link" id="navDashboard" style="display:none">Dashboard</a>
+                <a href="donate.html" class="nav-link">☕ Donate</a>
+                <a href="login.html" class="nav-link" id="navLogin">Login</a>
+                <button class="nav-link" id="navLogout" style="display:none" onclick="handleLogout()">Logout</button>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </nav>
+
+    <main>
+        <div id="setupPhase" class="quiz-setup">
+            <div class="setup-card">
+                <h1>Configure Your Quiz</h1>
+                <form id="setupForm">
+                    <div class="form-group">
+                        <label for="domain">Interview Domain</label>
+                        <select id="domain" name="domain" required>
+                            <option value="">Select a domain...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fileUpload">Upload Study Material (PDF, DOCX, TXT)</label>
+                        <div class="file-drop-zone" id="fileDropZone">
+                            <div class="file-drop-content">
+                                <span class="file-icon">📄</span>
+                                <p>Drag & drop your file here or <strong>browse</strong></p>
+                                <small>Max 10MB. Supported: PDF, DOCX, TXT</small>
+                            </div>
+                            <input type="file" id="fileUpload" name="file" accept=".pdf,.doc,.docx,.txt" hidden>
+                        </div>
+                        <div class="file-info" id="fileInfo" style="display:none">
+                            <span id="fileName"></span>
+                            <button type="button" class="btn btn-small btn-outline" id="removeFile">Remove</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="mcqCount">Number of MCQ Questions</label>
+                        <select id="mcqCount" name="mcqCount">
+                            <option value="1">1 Question (Test)</option>
+                            <option value="10">10 Questions</option>
+                            <option value="20">20 Questions</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="hasLongQuestions" name="hasLongQuestions">
+                            Include 2 Long Answer Questions
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="passingPercentage">Passing Percentage: <span id="passingValue">70%</span></label>
+                        <input type="range" id="passingPercentage" name="passingPercentage" min="0" max="100" value="70">
+                        <div class="range-labels">
+                            <span>0%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    <div class="form-error" id="setupError"></div>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" id="generateBtn">
+                        <span class="btn-text">Generate Quiz</span>
+                        <span class="btn-loader" style="display:none">⏳ Generating questions...</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="quizPhase" class="quiz-active" style="display:none">
+            <div class="quiz-header">
+                <div class="quiz-progress-bar">
+                    <div class="quiz-progress-fill" id="progressFill"></div>
+                </div>
+                <div class="quiz-meta">
+                    <span id="questionCounter">Question 1/10</span>
+                    <span class="quiz-timer" id="quizTimer">⏱️ 0:30</span>
+                </div>
+            </div>
+
+            <div class="quiz-card" id="questionCard">
+                <div class="question-type-badge" id="questionTypeBadge">MCQ</div>
+                <h2 class="question-text" id="questionText"></h2>
+
+                <div id="mcqOptions" class="mcq-options"></div>
+
+                <div id="longAnswerArea" style="display:none">
+                    <textarea id="longAnswerInput" class="long-answer-input" placeholder="Type your answer here..." rows="6"></textarea>
+                    <small class="form-hint">Your answer will be evaluated by AI based on the document content.</small>
+                </div>
+
+                <div class="question-actions">
+                    <button class="btn btn-primary" id="nextBtn" onclick="submitAnswer()">
+                        <span id="nextBtnText">Next →</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="timeoutWarning" class="timeout-overlay" style="display:none">
+                <div class="timeout-card">
+                    <h3>⏰ Time's Up!</h3>
+                    <p>Moving to the next question...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="retryLoading" class="retry-loading-overlay" style="display:none">
+            <div class="retry-loading-card">
+                <div class="retry-spinner"></div>
+                <h2>Generating Your Quiz</h2>
+                <div class="retry-progress-bar">
+                    <div class="retry-progress-fill" id="retryProgressFill"></div>
+                </div>
+                <p class="retry-status" id="retryStatus">Starting up...</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="../js/api.js"></script>
+    <script src="../js/toast.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/quiz.js"></script>
+</body>
+</html>

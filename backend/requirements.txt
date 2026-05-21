@@ -1,0 +1,17 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlalchemy==2.0.36
+asyncpg==0.30.0
+psycopg2-binary==2.9.10
+python-jose[cryptography]==3.3.0
+bcrypt==4.0.1
+python-multipart==0.0.18
+pydantic[email-validator]==2.10.3
+pydantic-settings==2.6.0
+openai==1.68.0
+PyMuPDF==1.25.2
+python-docx==1.1.2
+python-magic==0.4.27
+aiosqlite==0.20.0
+fastapi-limiter==0.1.6
+tenacity==9.0.0

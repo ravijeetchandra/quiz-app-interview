@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - QuizPrep</title>
+    <link rel="stylesheet" href="../css/style.css?v=4">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">QuizPrep</a>
+            <div class="nav-links">
+                <a href="quiz.html" class="nav-link">Take Quiz</a>
+                <a href="dashboard.html" class="nav-link" id="navDashboard" style="display:none">Dashboard</a>
+                <a href="donate.html" class="nav-link">☕ Donate</a>
+                <a href="login.html" class="nav-link" id="navLogin">Login</a>
+                <button class="nav-link" id="navLogout" style="display:none" onclick="handleLogout()">Logout</button>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </nav>
+
+    <main class="results-page">
+        <div id="resultsLoading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading your results...</p>
+        </div>
+
+        <div id="resultsContent" style="display:none">
+            <div class="result-hero" id="resultHero">
+                <div class="score-ring-container">
+                    <svg class="score-ring" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="90" class="ring-bg" />
+                        <circle cx="100" cy="100" r="90" class="ring-fill" id="scoreRing" />
+                        <text x="100" y="105" text-anchor="middle" class="score-text" id="scoreText">0%</text>
+                    </svg>
+                </div>
+                <h1 id="resultTitle">Quiz Complete!</h1>
+                <p class="result-domain" id="resultDomain"></p>
+                <div class="result-badge" id="resultBadge"></div>
+            </div>
+
+            <div class="result-stats">
+                <div class="stat-card">
+                    <span class="stat-value" id="correctCount">0</span>
+                    <span class="stat-label">Correct</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="totalQuestions">0</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="passingScore">70%</span>
+                    <span class="stat-label">Passing</span>
+                </div>
+            </div>
+
+            <div class="result-section-breakdown" id="sectionBreakdown">
+                <h2>Section Breakdown</h2>
+                <div id="sectionBars"></div>
+            </div>
+
+            <div class="result-answers" id="answerReview">
+                <h2>Question Review</h2>
+                <div id="answersList"></div>
+            </div>
+
+            <div class="donation-prompt" id="donationPrompt">
+                <div class="donation-card">
+                    <span class="donation-icon">🍵</span>
+                    <h3>Enjoyed this quiz? Support QuizPrep!</h3>
+                    <p>If this helped you prepare, consider buying me a chai. Keeps the project free and ad-free for everyone.</p>
+                    <a href="donate.html" class="btn btn-primary">🍵 Buy Me a Chai</a>
+                </div>
+            </div>
+
+            <div class="result-actions">
+                <a href="quiz.html?retry=1" class="btn btn-primary btn-lg" id="retrySameBtn">🔄 Retry Same Topic</a>
+                <a href="quiz.html" class="btn btn-outline btn-lg">📄 New Quiz</a>
+                <a href="dashboard.html" class="btn btn-outline btn-lg" id="viewDashboardBtn">📊 Dashboard</a>
+                <button class="btn btn-outline" onclick="window.print()">🖨️ Print Report</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="../js/api.js"></script>
+    <script src="../js/toast.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/results.js"></script>
+</body>
+</html>

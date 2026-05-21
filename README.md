@@ -2,10 +2,14 @@
 
 Practice interview questions generated from your own study materials using AI.
 
+🌐 **Live**: https://ravijeetchandra.github.io/quiz-app-interview/
+
+---
+
 ## Architecture
 
 ```
-Frontend (GitHub Pages)  ───►  Backend API (Render)  ───►  Google Gemini AI
+Frontend (GitHub Pages)  ───►  Backend API (Render)  ───►  Groq AI (Llama 3.1 8B)
     HTML/CSS/JS                    FastAPI/Python              Free Tier
 ```
 
@@ -14,57 +18,14 @@ Frontend (GitHub Pages)  ───►  Backend API (Render)  ───►  Googl
 - **Frontend**: Vanilla HTML/CSS/JS on GitHub Pages
 - **Backend**: Python FastAPI on Render (free tier)
 - **Database**: PostgreSQL on Neon (free tier) or SQLite (local dev)
-- **AI**: Google Gemini 2.5 Flash API (free tier, no credit card)
-
-## Setup
-
-### 1. Prerequisites
-- Python 3.10+
-- Google Gemini API key (get from [Google AI Studio](https://aistudio.google.com/) — free, no credit card)
-
-### 2. Local Development
-
-```bash
-# Backend
-cd backend
-pip install -r requirements.txt
-cp .env.example .env
-# Edit .env with your Gemini API key
-python -m uvicorn main:app --reload
-
-# Frontend
-# Serve frontend/ directory with any static server
-# e.g., python -m http.server 5500 -d ../frontend
-```
-
-### 3. Deploy Backend (Render)
-
-1. Push code to GitHub
-2. Connect repo to [Render](https://render.com) (free, no credit card)
-3. Create a new **Web Service** → select your repo
-4. Set:
-   - **Root Directory**: `backend`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-5. Add environment variables (see `.env.example`)
-6. Create a **PostgreSQL database** on Render (free for 90 days) or use [Neon](https://neon.tech) (free forever)
-
-### 4. Deploy Frontend (GitHub Pages)
-
-1. In your GitHub repo → Settings → Pages → Source: **GitHub Actions**
-2. Push changes to `main` — the included workflow auto-deploys `frontend/` to Pages
-3. Your site will be at `https://your-username.github.io/quiz-prep`
-
-### 5. Connect Frontend to Backend
-
-Edit `frontend/js/api.js` and change `API_BASE`:
-- Local: `http://localhost:8000`
-- Production: `https://your-app.onrender.com`
+- **AI**: Groq API — Llama 3.1 8B (free tier, no credit card)
+- **Auth**: JWT access + refresh tokens with bcrypt
 
 ## Features
 
 - ✅ Login/Registration with JWT + refresh tokens
 - ✅ Guest mode (no account needed)
+- ✅ Forgot / reset password flow
 - ✅ Upload PDF, DOCX, TXT files
 - ✅ Domain verification against document content
 - ✅ AI-generated MCQs (10 or 20 questions)
@@ -78,3 +39,58 @@ Edit `frontend/js/api.js` and change `API_BASE`:
 - ✅ Dark/light mode
 - ✅ Mobile-responsive
 - ✅ Confetti on pass, encouragement on fail
+
+## Live URLs
+
+| Service | URL |
+|---------|-----|
+| Frontend | https://ravijeetchandra.github.io/quiz-app-interview |
+| Backend API | https://quiz-prep-api.onrender.com |
+| Health Check | https://quiz-prep-api.onrender.com/api/health |
+
+## Local Development
+
+### Prerequisites
+
+- Python 3.12+
+- Groq API key (get from [console.groq.com](https://console.groq.com) — free, no credit card)
+
+### Backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env with your Groq API key
+python -m uvicorn main:app --reload
+```
+
+### Frontend
+
+Serve the `frontend/` directory with any static server:
+
+```bash
+python -m http.server 5500 -d ../frontend
+```
+
+## Deployment
+
+### Backend (Render)
+
+1. Push code to GitHub
+2. Connect repo via Render Blueprint (`render.yaml` auto-configures everything)
+3. Set `DATABASE_URL` (Neon PostgreSQL) and `GROQ_API_KEY` in Environment variables
+4. Deploy — the service auto-builds and starts
+
+### Frontend (GitHub Pages)
+
+1. GitHub repo → Settings → Pages → Source: **GitHub Actions**
+2. Push to `main` — included workflow auto-deploys `frontend/` to Pages
+3. Site at `https://ravijeetchandra.github.io/quiz-app-interview/`
+
+## Developer
+
+Built by **[Ravijeet Chandra](https://github.com/ravijeetchandra)**
+
+- GitHub: https://github.com/ravijeetchandra
+- Support: https://ravijeetchandra.github.io/quiz-app-interview/pages/donate.html

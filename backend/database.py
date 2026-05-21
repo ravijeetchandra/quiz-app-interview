@@ -33,5 +33,5 @@ async def get_db():
 
 async def init_db():
     async with engine.begin() as conn:
-        from models import User, QuizSession, Question, UserAnswer  # noqa
+        from models import User, QuizSession, Question, UserAnswer, PasswordResetToken  # noqa
         await conn.run_sync(Base.metadata.create_all)

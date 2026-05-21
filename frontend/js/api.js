@@ -175,4 +175,19 @@ const API = {
     async getDashboard() {
         return this.request('/api/quiz/dashboard');
     },
+
+    // Password reset
+    async forgotPassword(email) {
+        return this.request('/api/auth/forgot-password', {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+        });
+    },
+
+    async resetPassword(token, password) {
+        return this.request('/api/auth/reset-password', {
+            method: 'POST',
+            body: JSON.stringify({ token, password }),
+        });
+    },
 };

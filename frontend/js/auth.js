@@ -105,6 +105,86 @@ async function handleRegister(e) {
     }
 }
 
+async function handleForgotPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const errorEl = document.getElementById('forgotError');
+    const successEl = document.getElementById('forgotSuccess');
+    const btn = document.getElementById('forgotBtn');
+
+    if (!email) {
+        errorEl.textContent = 'Please enter your email';
+        return;
+    }
+
+    errorEl.textContent = '';
+    successEl.style.display = 'none';
+    btn.disabled = true;
+    btn.querySelector('.btn-text').style.display = 'none';
+    btn.querySelector('.btn-loader').style.display = 'inline';
+
+    try {
+        const res = await API.forgotPassword(email);
+        if (res.reset_token) {
+            successEl.innerHTML = `Reset link generated! <a href="reset-password.html?token=${res.reset_token}">Click here to reset</a>`;
+        } else {
+            successEl.textContent = 'If that email is registered, a reset link has been sent.';
+        }
+        successEl.style.display = 'block';
+    } catch (err) {
+        errorEl.textContent = err.message || 'Something went wrong. Please try again.';
+    } finally {
+        btn.disabled = false;
+        btn.querySelector('.btn-text').style.display = 'inline';
+        btn.querySelector('.btn-loader').style.display = 'none';
+    }
+}
+
+async function handleResetPassword(e) {
+    e.preventDefault();
+    const token = document.getElementById('resetToken').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const errorEl = document.getElementById('resetError');
+    const successEl = document.getElementById('resetSuccess');
+    const btn = document.getElementById('resetBtn');
+
+    if (!password || !confirmPassword) {
+        errorEl.textContent = 'Please fill in all fields';
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        errorEl.textContent = 'Passwords do not match';
+        return;
+    }
+
+    if (password.length < 8) {
+        errorEl.textContent = 'Password must be at least 8 characters';
+        return;
+    }
+
+    errorEl.textContent = '';
+    successEl.style.display = 'none';
+    btn.disabled = true;
+    btn.querySelector('.btn-text').style.display = 'none';
+    btn.querySelector('.btn-loader').style.display = 'inline';
+
+    try {
+        await API.resetPassword(token, password);
+        successEl.innerHTML = 'Password reset successful! <a href="login.html">Log in now</a>';
+        successEl.style.display = 'block';
+        document.getElementById('password').value = '';
+        document.getElementById('confirmPassword').value = '';
+    } catch (err) {
+        errorEl.textContent = err.message || 'Reset failed. The link may be expired.';
+    } finally {
+        btn.disabled = false;
+        btn.querySelector('.btn-text').style.display = 'inline';
+        btn.querySelector('.btn-loader').style.display = 'none';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     updateNav();
 
@@ -113,6 +193,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const registerForm = document.getElementById('registerForm');
     if (registerForm) registerForm.addEventListener('submit', handleRegister);
+
+    const forgotForm = document.getElementById('forgotPasswordForm');
+    if (forgotForm) forgotForm.addEventListener('submit', handleForgotPassword);
+
+    const resetForm = document.getElementById('resetPasswordForm');
+    if (resetForm) {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        if (token) {
+            document.getElementById('resetToken').value = token;
+        }
+        resetForm.addEventListener('submit', handleResetPassword);
+    }
 
     const theme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', theme);

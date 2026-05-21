@@ -90,6 +90,19 @@ class UserAnswer(Base):
     session = relationship("QuizSession")
 
 
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(UUID_COLUMN, primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID_COLUMN, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    token = Column(String(255), unique=True, index=True, nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    used = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
+    user = relationship("User")
+
+
 class QuizResult(Base):
     __tablename__ = "quiz_results"
 

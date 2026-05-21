@@ -9,7 +9,7 @@ function isAuthenticated() {
 
 function handleLogout() {
     API.logout().then(() => {
-        window.location.href = '/';
+        window.location.href = BASE_PATH + '/';
     });
 }
 
@@ -54,7 +54,7 @@ async function handleLogin(e) {
     try {
         await API.login({ email, password, remember_me: rememberMe });
         showToast('Welcome back!', 'Login successful', 'success');
-        window.location.href = '/';
+        window.location.href = BASE_PATH + '/';
     } catch (err) {
         errorEl.textContent = err.message || 'Login failed. Please try again.';
     } finally {
@@ -95,7 +95,7 @@ async function handleRegister(e) {
 
     try {
         await API.register({ email, password, display_name: displayName || undefined });
-        window.location.href = '/';
+        window.location.href = BASE_PATH + '/';
     } catch (err) {
         errorEl.textContent = err.message || 'Registration failed. Please try again.';
     } finally {

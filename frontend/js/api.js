@@ -2,6 +2,10 @@ const API_BASE = (window.location.origin.includes('localhost') || window.locatio
     ? 'http://localhost:8000'
     : 'https://quiz-prep-api.onrender.com';
 
+const BASE_PATH = (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1'))
+    ? ''
+    : '/quiz-app-interview';
+
 // SAFETY: No API keys are stored or sent from the frontend.
 // All secret keys (Gemini, JWT secret, database) live ONLY in
 // backend environment variables on the server. The frontend
@@ -41,7 +45,7 @@ const API = {
                 return retry.json();
             }
             this._clearTokens();
-            window.location.href = '/pages/login.html';
+            window.location.href = BASE_PATH + '/pages/login.html';
             return;
         }
 

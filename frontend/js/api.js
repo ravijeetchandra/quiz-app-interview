@@ -1,6 +1,6 @@
 const API_BASE = (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1'))
     ? 'http://localhost:8000'
-    : 'https://ai-quiz-app.onrender.com';
+    : 'https://quiz-prep-api.onrender.com';
 
 // SAFETY: No API keys are stored or sent from the frontend.
 // All secret keys (Gemini, JWT secret, database) live ONLY in

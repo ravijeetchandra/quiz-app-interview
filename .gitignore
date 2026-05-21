@@ -25,9 +25,14 @@ Thumbs.db
 # Database
 *.db
 *.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Quiz prep subdirectory (nested git)
+quiz-app-interview/
 
 # Temp files
 *.tmp
 
-# Nested git repos
-ai-quiz-app/
+

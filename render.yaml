@@ -2,7 +2,6 @@ services:
   - type: web
     name: quiz-prep-api
     runtime: python
-    repo: https://github.com/ravijeetchandra/ai-quiz-app
     plan: free
     region: oregon
     rootDir: backend

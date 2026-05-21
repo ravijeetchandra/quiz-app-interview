@@ -7,8 +7,12 @@ def _build_async_url(url: str) -> str:
     if url.startswith("sqlite"):
         return url
     if url.startswith("postgresql://"):
-        return url.replace("postgresql://", "postgresql+asyncpg://", 1)
-    return url
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    from urllib.parse import urlparse, urlencode, parse_qs
+    parsed = urlparse(url)
+    qs = parse_qs(parsed.query)
+    qs.pop("sslmode", None)
+    return parsed._replace(query=urlencode(qs, doseq=True)).geturl()
 
 
 engine = create_async_engine(_build_async_url(settings.database_url), echo=False)

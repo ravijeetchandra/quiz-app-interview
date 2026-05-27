@@ -204,6 +204,7 @@ async function autoRetry() {
     quizState.fileText = fileText;
     quizState.fileName = fileName;
     quizState.config = config;
+    config.file_text = fileText;
     mode = retryMode;
 
     document.getElementById('setupPhase').style.display = 'none';
@@ -325,6 +326,7 @@ async function generateQuiz() {
                 has_long_questions: hasLong,
                 passing_percentage: passing,
                 source_type: 'resume',
+                file_text: quizState.fileText,
             };
 
             const quizRes = await API.generateQuiz(

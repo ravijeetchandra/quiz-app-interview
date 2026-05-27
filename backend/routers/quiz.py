@@ -32,6 +32,7 @@ async def upload_document(
 
     text = await process_upload(content, file.filename)
     preview = get_document_preview(text)
+    print(f"[UPLOAD_DEBUG] text_len={len(text)}, text_preview_len={len(preview)}, filename={file.filename}")
 
     if domain.lower() == "auto":
         try:
@@ -77,6 +78,9 @@ async def generate_quiz(
     has_long = config_data.get("has_long_questions", False)
     passing_pct = config_data.get("passing_percentage", 70.0)
     source_type = config_data.get("source_type", "file")
+
+    if not file_text and config_data.get("file_text"):
+        file_text = config_data["file_text"]
 
     if domain not in settings.domain_list:
         raise HTTPException(status_code=400, detail=f"Invalid domain. Choose from: {settings.domain_list}")

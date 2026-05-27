@@ -71,13 +71,16 @@ function setMode(newMode) {
     document.getElementById('topicSection').style.display = mode === 'topic' ? 'block' : 'none';
     document.getElementById('resumeSection').style.display = mode === 'resume' ? 'block' : 'none';
     document.getElementById('setupError').textContent = '';
+    const domainSelect = document.getElementById('domain');
     if (mode === 'topic') {
+        domainSelect.required = true;
         document.getElementById('fileUpload').value = '';
         document.getElementById('fileInfo').style.display = 'none';
         document.getElementById('fileDropZone').style.display = 'block';
     }
     if (mode === 'resume') {
-        document.getElementById('domain').value = '';
+        domainSelect.required = false;
+        domainSelect.value = '';
     }
 }
 

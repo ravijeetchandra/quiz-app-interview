@@ -229,7 +229,10 @@ async def _call_llm(prompt: str) -> str:
             temperature=0.2,
             max_tokens=2048,
         )
-        return response.choices[0].message.content or ""
+        content = (response.choices[0].message.content or "").strip()
+        if not content:
+            raise json.JSONDecodeError("LLM returned empty response", "", 0)
+        return content
 
 
 def _extract_json(text: str):
@@ -239,6 +242,9 @@ def _extract_json(text: str):
     match = re.search(r'(\{.*\}|\[.*\])', text, re.DOTALL)
     if match:
         text = match.group(1)
+
+    if not text:
+        raise json.JSONDecodeError("Empty content after extraction", "", 0)
 
     return json.loads(text)
 

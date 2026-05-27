@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from models import User
@@ -11,6 +12,7 @@ import uuid
 import json
 import openai
 
+logger = logging.getLogger("quiz")
 router = APIRouter(prefix="/api/quiz", tags=["Quiz"])
 
 
@@ -88,8 +90,13 @@ async def generate_quiz(
         long_data = result["long_questions"]
         sections = result["sections"]
     except openai.RateLimitError as e:
+        logger.error(f"Groq rate limit: {e.message}")
         raise HTTPException(status_code=429, detail=f"Groq daily token limit reached. Try again later or upgrade: {e.message}")
+    except json.JSONDecodeError as e:
+        logger.error(f"LLM returned invalid JSON after retries: {e}")
+        raise HTTPException(status_code=503, detail=f"LLM service error: AI returned invalid response. Please try again.")
     except Exception as e:
+        logger.error(f"LLM service error: {type(e).__name__}: {e}")
         raise HTTPException(status_code=503, detail=f"LLM service error: {str(e)[:200]}")
 
     user_id = user.id if user else None

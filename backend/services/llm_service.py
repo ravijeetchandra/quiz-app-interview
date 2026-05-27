@@ -216,9 +216,10 @@ Return ONLY valid JSON:
 
 
 @retry(
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=2, max=30),
+    stop=stop_after_attempt(5),
+    wait=wait_exponential(multiplier=1, min=2, max=60),
     retry=retry_if_exception_type((APIError, APITimeoutError, RateLimitError, APIConnectionError, json.JSONDecodeError)),
+    before_sleep=lambda retry_state: print(f"LLM call failed (attempt {retry_state.attempt_number}), retrying..."),
     reraise=True,
 )
 async def _call_llm(prompt: str) -> str:
@@ -227,7 +228,7 @@ async def _call_llm(prompt: str) -> str:
             model=MODEL,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
-            max_tokens=2048,
+            max_tokens=4096,
         )
         content = (response.choices[0].message.content or "").strip()
         if not content:

@@ -43,6 +43,7 @@ class QuizConfig(BaseModel):
     mcq_count: int = Field(default=10, ge=1, le=20)
     has_long_questions: bool = False
     passing_percentage: float = Field(default=70.0, ge=0, le=100)
+    source_type: str = "file"
 
 
 class QuizStart(BaseModel):

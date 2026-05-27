@@ -23,11 +23,12 @@ Frontend (GitHub Pages)  ───►  Backend API (Render)  ───►  Groq 
 
 ## Features
 
+- ✅ **Two quiz modes**: By Resume (auto-detect domain) or By Topic (pick from domains)
 - ✅ Login/Registration with JWT + refresh tokens
 - ✅ Guest mode (no account needed)
 - ✅ Forgot / reset password flow
-- ✅ Upload PDF, DOCX, TXT files
-- ✅ Domain verification against document content
+- ✅ Upload PDF, DOCX, TXT files (study material or resume)
+- ✅ Auto domain detection from resume content via AI
 - ✅ AI-generated MCQs (10 or 20 questions)
 - ✅ Optional 2 long-answer questions
 - ✅ 30s timer per MCQ, 2min per long question
@@ -39,6 +40,20 @@ Frontend (GitHub Pages)  ───►  Backend API (Render)  ───►  Groq 
 - ✅ Dark/light mode
 - ✅ Mobile-responsive
 - ✅ Confetti on pass, encouragement on fail
+
+## How It Works
+
+### 📄 By Resume
+1. Upload your resume (PDF/DOCX/TXT)
+2. AI auto-detects your domain (Data Science, Cybersecurity, etc.)
+3. Questions are generated about that domain, tailored to your experience level
+4. Take the quiz and get evaluated
+
+### 📚 By Topic
+1. Pick an interview domain from the list
+2. AI generates general knowledge questions about that domain
+3. No file upload needed — start practicing immediately
+4. Take the quiz and get evaluated
 
 ## Live URLs
 

@@ -1,3 +1,4 @@
+let mode = 'resume';
 let quizState = {
     questions: [],
     currentIndex: 0,
@@ -35,6 +36,7 @@ function tryRestoreQuiz() {
             sessionStorage.removeItem('retryFileText');
             sessionStorage.removeItem('retryFileName');
             sessionStorage.removeItem('retryConfig');
+            sessionStorage.removeItem('retryMode');
             return false;
         }
     } catch {
@@ -62,6 +64,30 @@ function clearSavedQuiz() {
     localStorage.removeItem(QUIZ_SAVE_KEY);
 }
 
+function setMode(newMode) {
+    mode = newMode;
+    document.getElementById('modeResume').classList.toggle('mode-active', mode === 'resume');
+    document.getElementById('modeTopic').classList.toggle('mode-active', mode === 'topic');
+    document.getElementById('topicSection').style.display = mode === 'topic' ? 'block' : 'none';
+    document.getElementById('resumeSection').style.display = mode === 'resume' ? 'block' : 'none';
+    document.getElementById('setupError').textContent = '';
+    if (mode === 'topic') {
+        document.getElementById('fileUpload').value = '';
+        document.getElementById('fileInfo').style.display = 'none';
+        document.getElementById('fileDropZone').style.display = 'block';
+    }
+    if (mode === 'resume') {
+        document.getElementById('domain').value = '';
+    }
+}
+
+function btnLoading(loading) {
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = loading;
+    btn.querySelector('.btn-text').style.display = loading ? 'none' : 'inline';
+    btn.querySelector('.btn-loader').style.display = loading ? 'inline' : 'none';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('retry') === '1') {
@@ -72,6 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
     sessionStorage.removeItem('retryFileText');
     sessionStorage.removeItem('retryFileName');
     sessionStorage.removeItem('retryConfig');
+    sessionStorage.removeItem('retryMode');
+    setMode('resume');
     loadDomains();
     setupFileUpload();
     setupForm();
@@ -159,18 +187,21 @@ function setupForm() {
 }
 
 async function autoRetry() {
-    const fileText = sessionStorage.getItem('retryFileText');
-    const fileName = sessionStorage.getItem('retryFileName');
     const configRaw = sessionStorage.getItem('retryConfig');
-    if (!fileText || !configRaw) {
+    if (!configRaw) {
         window.location.href = 'quiz.html';
         return;
     }
 
     const config = JSON.parse(configRaw);
+    const fileText = sessionStorage.getItem('retryFileText') || '';
+    const fileName = sessionStorage.getItem('retryFileName') || '';
+    const retryMode = sessionStorage.getItem('retryMode') || 'resume';
+
     quizState.fileText = fileText;
     quizState.fileName = fileName;
     quizState.config = config;
+    mode = retryMode;
 
     document.getElementById('setupPhase').style.display = 'none';
     document.getElementById('quizPhase').style.display = 'none';
@@ -210,9 +241,10 @@ async function autoRetry() {
         sessionStorage.removeItem('retryFileText');
         sessionStorage.removeItem('retryFileName');
         sessionStorage.removeItem('retryConfig');
+        sessionStorage.removeItem('retryMode');
         overlay.style.display = 'none';
         document.getElementById('setupPhase').style.display = 'block';
-        showError('Retry failed: ' + (err.message || 'Please upload the file again.'));
+        showError('Retry failed: ' + (err.message || 'Please try again.'));
     }
 }
 
@@ -246,50 +278,64 @@ async function generateQuiz() {
     const hasLong = document.getElementById('hasLongQuestions').checked;
     const passing = parseFloat(document.getElementById('passingPercentage').value);
 
-    if (!domain) { showError('Please select a domain'); return; }
-    if (!fileInput.files.length) { showError('Please upload a file'); return; }
+    if (mode === 'topic') {
+        if (!domain) { showError('Please select a domain'); return; }
+        showError('');
 
-    showError('');
+        btnLoading(true);
+        try {
+            quizState.config = {
+                domain,
+                mcq_count: mcqCount,
+                has_long_questions: hasLong,
+                passing_percentage: passing,
+                source_type: 'topic',
+            };
+            quizState.fileText = '';
+            quizState.fileName = '';
 
-    const btn = document.getElementById('generateBtn');
-    btn.disabled = true;
-    btn.querySelector('.btn-text').style.display = 'none';
-    btn.querySelector('.btn-loader').style.display = 'inline';
-
-    try {
-        const uploadRes = await API.uploadFile(fileInput.files[0], domain);
-
-        quizState.fileText = uploadRes.full_text || uploadRes.text_preview;
-        quizState.config = {
-            domain,
-            mcq_count: mcqCount,
-            has_long_questions: hasLong,
-            passing_percentage: passing,
-        };
-
-        if (uploadRes.detected_domain !== 'Unknown' &&
-            uploadRes.detected_domain.toLowerCase() !== domain.toLowerCase()) {
-            if (!confirm(`The document appears to be about "${uploadRes.detected_domain}", but you selected "${domain}". Continue anyway?`)) {
-                btn.disabled = false;
-                btn.querySelector('.btn-text').style.display = 'inline';
-                btn.querySelector('.btn-loader').style.display = 'none';
-                return;
-            }
+            const quizRes = await API.generateQuiz(quizState.config);
+            startQuiz(quizRes);
+        } catch (err) {
+            showError(err.message || 'Failed to generate quiz. Please try again.');
+        } finally {
+            btnLoading(false);
         }
+    } else {
+        if (!fileInput.files.length) { showError('Please upload a resume'); return; }
+        showError('');
 
-        const quizRes = await API.generateQuiz(
-            quizState.config,
-            quizState.fileText,
-            uploadRes.filename
-        );
+        btnLoading(true);
+        try {
+            const uploadRes = await API.uploadFile(fileInput.files[0], 'auto');
 
-        startQuiz(quizRes);
-    } catch (err) {
-        showError(err.message || 'Failed to generate quiz. Please try again.');
-    } finally {
-        btn.disabled = false;
-        btn.querySelector('.btn-text').style.display = 'inline';
-        btn.querySelector('.btn-loader').style.display = 'none';
+            let detectedDomain = uploadRes.detected_domain;
+            if (!detectedDomain || detectedDomain === 'Unknown') {
+                detectedDomain = 'General / Other';
+            }
+
+            quizState.fileText = uploadRes.full_text || uploadRes.text_preview;
+            quizState.fileName = uploadRes.filename;
+            quizState.config = {
+                domain: detectedDomain,
+                mcq_count: mcqCount,
+                has_long_questions: hasLong,
+                passing_percentage: passing,
+                source_type: 'resume',
+            };
+
+            const quizRes = await API.generateQuiz(
+                quizState.config,
+                quizState.fileText,
+                uploadRes.filename
+            );
+
+            startQuiz(quizRes);
+        } catch (err) {
+            showError(err.message || 'Failed to generate quiz. Please try again.');
+        } finally {
+            btnLoading(false);
+        }
     }
 }
 
@@ -449,6 +495,7 @@ async function finishQuiz() {
         sessionStorage.setItem('retryFileText', quizState.fileText);
         sessionStorage.setItem('retryFileName', quizState.fileName);
         sessionStorage.setItem('retryConfig', JSON.stringify(quizState.config));
+        sessionStorage.setItem('retryMode', mode);
         clearSavedQuiz();
         if (typeof showToast === 'function') {
             showToast('Quiz submitted!', 'Redirecting to results...', 'success', 2000);

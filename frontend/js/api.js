@@ -146,7 +146,7 @@ const API = {
         });
     },
 
-    async generateQuiz(config, fileText, filename) {
+    async generateQuiz(config, fileText = '', filename = '') {
         const formData = new FormData();
         formData.append('config', JSON.stringify(config));
         formData.append('file_text', fileText);

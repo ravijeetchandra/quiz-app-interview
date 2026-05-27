@@ -25,26 +25,42 @@
         <div id="setupPhase" class="quiz-setup">
             <div class="setup-card">
                 <h1>Configure Your Quiz</h1>
+                <div class="mode-selector">
+                    <button class="mode-btn mode-active" id="modeResume" onclick="setMode('resume')">
+                        <span class="mode-icon">📄</span>
+                        By Resume
+                        <span class="mode-label">Quiz based on your uploaded resume</span>
+                    </button>
+                    <button class="mode-btn" id="modeTopic" onclick="setMode('topic')">
+                        <span class="mode-icon">📚</span>
+                        By Topic
+                        <span class="mode-label">Quiz based on general domain knowledge</span>
+                    </button>
+                </div>
                 <form id="setupForm">
-                    <div class="form-group">
-                        <label for="domain">Interview Domain</label>
-                        <select id="domain" name="domain" required>
-                            <option value="">Select a domain...</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="fileUpload">Upload Study Material (PDF, DOCX, TXT)</label>
-                        <div class="file-drop-zone" id="fileDropZone">
-                            <div class="file-drop-content">
-                                <span class="file-icon">📄</span>
-                                <p>Drag & drop your file here or <strong>browse</strong></p>
-                                <small>Max 10MB. Supported: PDF, DOCX, TXT</small>
-                            </div>
-                            <input type="file" id="fileUpload" name="file" accept=".pdf,.doc,.docx,.txt" hidden>
+                    <div id="topicSection">
+                        <div class="form-group">
+                            <label for="domain">Interview Domain</label>
+                            <select id="domain" name="domain" required>
+                                <option value="">Select a domain...</option>
+                            </select>
                         </div>
-                        <div class="file-info" id="fileInfo" style="display:none">
-                            <span id="fileName"></span>
-                            <button type="button" class="btn btn-small btn-outline" id="removeFile">Remove</button>
+                    </div>
+                    <div id="resumeSection">
+                        <div class="form-group">
+                            <label for="fileUpload">Upload Your Resume (PDF, DOCX, TXT)</label>
+                            <div class="file-drop-zone" id="fileDropZone">
+                                <div class="file-drop-content">
+                                    <span class="file-icon">📄</span>
+                                    <p>Drag & drop your resume here or <strong>browse</strong></p>
+                                    <small>Max 10MB. Supported: PDF, DOCX, TXT</small>
+                                </div>
+                                <input type="file" id="fileUpload" name="file" accept=".pdf,.doc,.docx,.txt" hidden>
+                            </div>
+                            <div class="file-info" id="fileInfo" style="display:none">
+                                <span id="fileName"></span>
+                                <button type="button" class="btn btn-small btn-outline" id="removeFile">Remove</button>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">

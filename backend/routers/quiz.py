@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/quiz", tags=["Quiz"])
 @router.post("/upload")
 async def upload_document(
     file: UploadFile = File(...),
-    domain: str = Form(...),
+    domain: str = Form(default="auto"),
     user: User = Depends(get_current_user),
 ):
     if not validate_file_extension(file.filename):
@@ -31,8 +31,12 @@ async def upload_document(
     text = await process_upload(content, file.filename)
     preview = get_document_preview(text)
 
-    is_general = domain.lower() == "general / other"
-    if is_general:
+    if domain.lower() == "auto":
+        try:
+            detected_domain = await classify_domain(preview, settings.domain_list)
+        except Exception:
+            detected_domain = "General / Other"
+    elif domain.lower() == "general / other":
         detected_domain = "General / Other"
     else:
         try:
@@ -47,15 +51,15 @@ async def upload_document(
         "full_text": text,
         "detected_domain": detected_domain,
         "selected_domain": domain,
-        "domain_match": is_general or detected_domain.lower() == domain.lower(),
+        "domain_match": domain.lower() != "auto" and (domain.lower() == "general / other" or detected_domain.lower() == domain.lower()),
     }
 
 
 @router.post("/generate", response_model=QuizSessionOut)
 async def generate_quiz(
     config: str = Form(...),
-    file_text: str = Form(...),
-    filename: str = Form(...),
+    file_text: str = Form(default=""),
+    filename: str = Form(default=""),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -70,6 +74,7 @@ async def generate_quiz(
     mcq_count = config_data.get("mcq_count", 10)
     has_long = config_data.get("has_long_questions", False)
     passing_pct = config_data.get("passing_percentage", 70.0)
+    source_type = config_data.get("source_type", "file")
 
     if domain not in settings.domain_list:
         raise HTTPException(status_code=400, detail=f"Invalid domain. Choose from: {settings.domain_list}")
@@ -78,7 +83,7 @@ async def generate_quiz(
         raise HTTPException(status_code=400, detail="mcq_count must be an integer between 1 and 20")
 
     try:
-        result = await generate_quiz_content(file_text, domain, mcq_count, has_long)
+        result = await generate_quiz_content(file_text, domain, mcq_count, has_long, source_type)
         mcq_data = result["mcq_questions"]
         long_data = result["long_questions"]
         sections = result["sections"]
@@ -90,11 +95,13 @@ async def generate_quiz(
     user_id = user.id if user else None
     guest_id = str(uuid.uuid4()) if not user else None
 
+    doc_name = filename if filename else f"General - {domain}"
+
     session = QuizSession(
         id=uuid.uuid4(),
         user_id=user_id,
         domain=domain,
-        document_name=filename,
+        document_name=doc_name,
         mcq_count=mcq_count,
         has_long_questions=has_long,
         passing_percentage=passing_pct,

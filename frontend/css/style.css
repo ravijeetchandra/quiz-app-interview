@@ -2127,3 +2127,48 @@ input[type="range"] {
     0% { transform: translateY(0) rotate(0deg); opacity: 1; }
     100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
 }
+
+.mode-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 16px;
+    border: 2px solid var(--border-color, #ddd);
+    border-radius: 12px;
+    background: var(--card-bg, #fff);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-secondary, #666);
+}
+
+.mode-btn:hover {
+    border-color: var(--primary-color, #6c5ce7);
+    color: var(--primary-color, #6c5ce7);
+}
+
+.mode-btn.mode-active {
+    border-color: var(--primary-color, #6c5ce7);
+    background: var(--primary-color, #6c5ce7);
+    color: #fff;
+}
+
+.mode-btn .mode-icon {
+    display: block;
+    font-size: 28px;
+    margin-bottom: 6px;
+}
+
+.mode-btn .mode-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 4px;
+    opacity: 0.8;
+}

@@ -17,6 +17,122 @@ MODEL = "llama-3.1-8b-instant"
 
 _llm_semaphore = asyncio.Semaphore(5)
 
+TOPIC_MCQ_ONLY_PROMPT = """Generate exactly {count} multiple-choice questions for a "{domain}" interview.
+These should test general knowledge of {domain} concepts, common interview topics, and best practices.
+No document is provided — generate questions based on standard {domain} knowledge.
+
+Rules:
+- Generate EXACTLY {count} MCQs. Not more, not less.
+- Each MCQ must have 4 options (A, B, C, D) with the correct answer marked
+- Do NOT include any long questions
+- Cover a range of fundamental to intermediate topics in {domain}
+
+Return ONLY this JSON (no other text):
+{{
+  "mcq_questions": [
+    {{
+      "question": "...",
+      "options": ["A option", "B option", "C option", "D option"],
+      "correct_answer": "correct option text",
+      "section": "Topic name"
+    }}
+  ],
+  "long_questions": [],
+  "sections": ["Section 1", "Section 2"]
+}}
+"""
+
+TOPIC_MCQ_WITH_LONG_PROMPT = """Generate exactly {count} multiple-choice questions AND exactly 2 long-form questions for a "{domain}" interview.
+These should test general knowledge of {domain} concepts, common interview topics, and best practices.
+No document is provided — generate questions based on standard {domain} knowledge.
+
+Rules:
+- Generate EXACTLY {count} MCQs. Not more, not less.
+- Each MCQ must have 4 options (A, B, C, D) with the correct answer marked
+- Generate EXACTLY 2 long-form questions that test deep analytical understanding
+- Cover a range of fundamental to intermediate topics in {domain}
+
+Return ONLY this JSON (no other text):
+{{
+  "mcq_questions": [
+    {{
+      "question": "...",
+      "options": ["A option", "B option", "C option", "D option"],
+      "correct_answer": "correct option text",
+      "section": "Topic name"
+    }}
+  ],
+  "long_questions": [
+    {{
+      "question": "Long question testing deep understanding...",
+      "section": "Topic name"
+    }}
+  ],
+  "sections": ["Section 1", "Section 2"]
+}}
+"""
+
+RESUME_MCQ_ONLY_PROMPT = """Based on the following resume, generate exactly {count} multiple-choice questions for a "{domain}" interview.
+The questions should test the candidate's knowledge of {domain} at a level appropriate for their experience and skills shown in the resume.
+
+Rules:
+- Generate EXACTLY {count} MCQs. Not more, not less.
+- Each MCQ must have 4 options (A, B, C, D) with the correct answer marked
+- Do NOT include any long questions
+- Tailor difficulty to the candidate's apparent experience level from the resume
+- Cover relevant {domain} topics that match their background
+
+Return ONLY this JSON (no other text):
+{{
+  "mcq_questions": [
+    {{
+      "question": "...",
+      "options": ["A option", "B option", "C option", "D option"],
+      "correct_answer": "correct option text",
+      "section": "Topic name"
+    }}
+  ],
+  "long_questions": [],
+  "sections": ["Section 1", "Section 2"]
+}}
+
+Resume:
+{content}
+"""
+
+RESUME_MCQ_WITH_LONG_PROMPT = """Based on the following resume, generate exactly {count} multiple-choice questions AND exactly 2 long-form questions for a "{domain}" interview.
+The questions should test the candidate's knowledge of {domain} at a level appropriate for their experience and skills shown in the resume.
+
+Rules:
+- Generate EXACTLY {count} MCQs. Not more, not less.
+- Each MCQ must have 4 options (A, B, C, D) with the correct answer marked
+- Generate EXACTLY 2 long-form questions that test deep analytical understanding
+- Tailor difficulty to the candidate's apparent experience level from the resume
+- Cover relevant {domain} topics that match their background
+
+Return ONLY this JSON (no other text):
+{{
+  "mcq_questions": [
+    {{
+      "question": "...",
+      "options": ["A option", "B option", "C option", "D option"],
+      "correct_answer": "correct option text",
+      "section": "Topic name"
+    }}
+  ],
+  "long_questions": [
+    {{
+      "question": "Long question testing deep understanding...",
+      "section": "Topic name"
+    }}
+  ],
+  "sections": ["Section 1", "Section 2"]
+}}
+
+Resume:
+{content}
+"""
+
 MCQ_ONLY_PROMPT = """Based on the document content below, generate exactly {count} multiple-choice questions for a "{domain}" interview.
 
 Rules:
@@ -128,13 +244,27 @@ async def classify_domain(text: str, domain_list: List[str]) -> str:
     return result if result in domain_list else "Unknown"
 
 
-async def generate_quiz_content(content: str, domain: str, count: int, has_long: bool):
+async def generate_quiz_content(content: str, domain: str, count: int, has_long: bool, source_type: str = "file"):
     domain_label = "any field" if domain.lower() == "general / other" else domain
-    prompt = (MCQ_WITH_LONG_PROMPT if has_long else MCQ_ONLY_PROMPT).format(
-        content=content[:8000],
-        domain=domain_label,
-        count=count,
-    )
+
+    if source_type == "topic":
+        prompt = (TOPIC_MCQ_WITH_LONG_PROMPT if has_long else TOPIC_MCQ_ONLY_PROMPT).format(
+            domain=domain_label,
+            count=count,
+        )
+    elif source_type == "resume":
+        prompt = (RESUME_MCQ_WITH_LONG_PROMPT if has_long else RESUME_MCQ_ONLY_PROMPT).format(
+            content=content[:8000],
+            domain=domain_label,
+            count=count,
+        )
+    else:
+        prompt = (MCQ_WITH_LONG_PROMPT if has_long else MCQ_ONLY_PROMPT).format(
+            content=content[:8000],
+            domain=domain_label,
+            count=count,
+        )
+
     response_text = await _call_llm(prompt)
     data = _extract_json(response_text)
 

@@ -222,12 +222,12 @@ Return ONLY valid JSON:
     before_sleep=lambda retry_state: print(f"LLM call failed (attempt {retry_state.attempt_number}), retrying..."),
     reraise=True,
 )
-async def _call_llm(prompt: str) -> str:
+async def _call_llm(prompt: str, temperature: float = 0.2) -> str:
     async with _llm_semaphore:
         response = await client.chat.completions.create(
             model=MODEL,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.2,
+            temperature=temperature,
             max_tokens=4096,
         )
         content = (response.choices[0].message.content or "").strip()
@@ -265,6 +265,9 @@ async def classify_domain(text: str, domain_list: List[str]) -> str:
 
 
 async def generate_quiz_content(content: str, domain: str, count: int, has_long: bool, source_type: str = "file"):
+    import random
+    variation = random.randint(1, 99999)
+
     if domain.lower() == "general / other":
         if source_type == "resume":
             domain_label = "the candidate's field as shown in their resume"
@@ -273,26 +276,28 @@ async def generate_quiz_content(content: str, domain: str, count: int, has_long:
     else:
         domain_label = domain
 
+    seed_line = f"\n(Variation: {variation} — generate different questions than previous attempts, covering different topics and aspects.)"
+
     if source_type == "topic":
         prompt = (TOPIC_MCQ_WITH_LONG_PROMPT if has_long else TOPIC_MCQ_ONLY_PROMPT).format(
             domain=domain_label,
             count=count,
-        )
+        ) + seed_line
     elif source_type == "resume":
         prompt = (RESUME_MCQ_WITH_LONG_PROMPT if has_long else RESUME_MCQ_ONLY_PROMPT).format(
             content=content[:8000],
             domain=domain_label,
             count=count,
-        )
+        ) + seed_line
     else:
         prompt = (MCQ_WITH_LONG_PROMPT if has_long else MCQ_ONLY_PROMPT).format(
             content=content[:8000],
             domain=domain_label,
             count=count,
-        )
+        ) + seed_line
 
     print(f"[PROMPT_DEBUG] Prompt length={len(prompt)}, first 300 chars: {prompt[:300]!r}")
-    response_text = await _call_llm(prompt)
+    response_text = await _call_llm(prompt, temperature=0.8)
     data = _extract_json(response_text)
 
     mcqs = data.get("mcq_questions", [])

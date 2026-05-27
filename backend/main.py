@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -6,6 +7,8 @@ from database import init_db
 from routers import auth, quiz, results
 import time
 from collections import defaultdict
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s", force=True)
 
 
 # In-memory rate limiter (use Redis for production)

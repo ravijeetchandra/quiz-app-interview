@@ -291,6 +291,7 @@ async def generate_quiz_content(content: str, domain: str, count: int, has_long:
             count=count,
         )
 
+    print(f"[PROMPT_DEBUG] Prompt length={len(prompt)}, first 300 chars: {prompt[:300]!r}")
     response_text = await _call_llm(prompt)
     data = _extract_json(response_text)
 

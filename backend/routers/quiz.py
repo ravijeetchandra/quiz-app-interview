@@ -84,7 +84,7 @@ async def generate_quiz(
     if not isinstance(mcq_count, int) or mcq_count < 1 or mcq_count > 20:
         raise HTTPException(status_code=400, detail="mcq_count must be an integer between 1 and 20")
 
-    logger.info(f"Generate: source_type={source_type}, file_text_len={len(file_text)}, domain={domain}, mcq_count={mcq_count}")
+    print(f"[GENERATE_DEBUG] source_type={source_type}, file_text_len={len(file_text)}, file_text_start={file_text[:200]!r}")
 
     try:
         result = await generate_quiz_content(file_text, domain, mcq_count, has_long, source_type)

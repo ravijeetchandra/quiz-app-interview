@@ -247,7 +247,11 @@ def _extract_json(text: str):
     if not text:
         raise json.JSONDecodeError("Empty content after extraction", "", 0)
 
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        print(f"[LLM RAW] Response snippet: {text[:800]}")
+        raise
 
 
 async def classify_domain(text: str, domain_list: List[str]) -> str:

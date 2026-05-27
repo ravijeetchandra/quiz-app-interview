@@ -190,8 +190,11 @@ Document:
 {content}
 """
 
-DOMAIN_CLASSIFICATION_PROMPT = """Return one domain from: {domains}
-If unsure, return "Unknown".
+DOMAIN_CLASSIFICATION_PROMPT = """Given the following resume or document preview, determine which interview domain it best matches from this list: {domains}.
+
+Analyze the skills, technologies, tools, and experience mentioned.
+Return ONLY the exact domain name from the list. If unsure, return "Unknown".
+
 Preview: {preview}
 """
 
@@ -245,7 +248,13 @@ async def classify_domain(text: str, domain_list: List[str]) -> str:
 
 
 async def generate_quiz_content(content: str, domain: str, count: int, has_long: bool, source_type: str = "file"):
-    domain_label = "any field" if domain.lower() == "general / other" else domain
+    if domain.lower() == "general / other":
+        if source_type == "resume":
+            domain_label = "the candidate's field as shown in their resume"
+        else:
+            domain_label = "any field"
+    else:
+        domain_label = domain
 
     if source_type == "topic":
         prompt = (TOPIC_MCQ_WITH_LONG_PROMPT if has_long else TOPIC_MCQ_ONLY_PROMPT).format(

@@ -31,6 +31,8 @@ async def upload_document(
         raise HTTPException(status_code=400, detail=f"File exceeds {settings.max_upload_size_mb}MB limit")
 
     text = await process_upload(content, file.filename)
+    if not text.strip():
+        raise HTTPException(status_code=400, detail="Could not extract any text from this file. The file may be a scanned/image PDF. Please upload a text-based PDF (not scanned), DOCX, or TXT file, or copy-paste the resume content into a text file.")
     preview = get_document_preview(text)
     print(f"[UPLOAD_DEBUG] text_len={len(text)}, text_preview_len={len(preview)}, filename={file.filename}")
 

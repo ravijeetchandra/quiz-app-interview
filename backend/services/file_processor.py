@@ -20,6 +20,15 @@ def extract_text_from_pdf(file_path: str) -> str:
     for page in doc:
         text += page.get_text()
     doc.close()
+
+    if not text.strip():
+        try:
+            from pypdf import PdfReader
+            reader = PdfReader(file_path)
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        except Exception:
+            pass
+
     return text
 
 

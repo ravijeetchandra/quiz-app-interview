@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 from typing import List
 
 from openai import AsyncOpenAI, APIError, APITimeoutError, RateLimitError, APIConnectionError
@@ -217,7 +218,7 @@ Return ONLY valid JSON:
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=30),
-    retry=retry_if_exception_type((APIError, APITimeoutError, RateLimitError, APIConnectionError)),
+    retry=retry_if_exception_type((APIError, APITimeoutError, RateLimitError, APIConnectionError, json.JSONDecodeError)),
     reraise=True,
 )
 async def _call_llm(prompt: str) -> str:
@@ -234,6 +235,11 @@ async def _call_llm(prompt: str) -> str:
 def _extract_json(text: str):
     text = text.strip()
     text = text.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+
+    match = re.search(r'(\{.*\}|\[.*\])', text, re.DOTALL)
+    if match:
+        text = match.group(1)
+
     return json.loads(text)
 
 
